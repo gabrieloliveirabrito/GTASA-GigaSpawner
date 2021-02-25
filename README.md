@@ -1,7 +1,9 @@
 
 Os atalhos são combinações, exemplo:
+
 **Tecla 1**
-- Tecla Z
+- Tecla Z: ...
+
 Deve-se apertar a tecla 1 junto da tecla Z
 
 ## Atalhos:
