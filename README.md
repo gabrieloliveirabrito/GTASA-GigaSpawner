@@ -16,6 +16,7 @@ Deve-se apertar a tecla 1 junto da tecla Z
 - Tecla B: Spawna NPCS da configuração em linha
 - Tecla N: Spawna NPCS da configuração em linha
 - Tecla M: Spawna NPCS da configuração em linha
+ 
 **Tecla 2**
 - Tecla Z : Aumenta o número de NPCs que serão spawnados por linha (matriz = linha*linha)
 - Tecla X : Diminui o número de NPCs que serão spawnados por linha
