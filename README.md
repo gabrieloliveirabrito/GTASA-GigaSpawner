@@ -11,11 +11,20 @@ Deve-se apertar a tecla 1 junto da tecla Z
 - Tecla Z : Spawna NPCs em linha reta
 - Tecla X : Spawna NPCs em forma de matriz
 - Tecla Espaço: Executa animação
-
+- Tecla C: Spawna NPCS da configuração em linha
+- Tecla V: Spawna NPCS da configuração em linha
+- Tecla B: Spawna NPCS da configuração em linha
+- Tecla N: Spawna NPCS da configuração em linha
+- Tecla M: Spawna NPCS da configuração em linha
 **Tecla 2**
 - Tecla Z : Aumenta o número de NPCs que serão spawnados por linha (matriz = linha*linha)
 - Tecla X : Diminui o número de NPCs que serão spawnados por linha
 - Tecla Espaço: Executa animação
+- Tecla C: Spawna NPCS da configuração em matriz
+- Tecla V: Spawna NPCS da configuração em matriz
+- Tecla B: Spawna NPCS da configuração em matriz
+- Tecla N: Spawna NPCS da configuração em matriz
+- Tecla M: Spawna NPCS da configuração em matriz
  
 **Tecla 3**
 - Tecla Z : Exibe o total de NPCs spawnados (mesmo os mortos)
