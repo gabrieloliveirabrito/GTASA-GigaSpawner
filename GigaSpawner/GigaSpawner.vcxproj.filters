@@ -2,10 +2,12 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <ClCompile Include="GigaSpawner.cpp" />
+    <ClCompile Include="IniReader.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GigaSpawner.h" />
     <ClInclude Include="includes.h" />
+    <ClInclude Include="IniReader.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="README.md" />

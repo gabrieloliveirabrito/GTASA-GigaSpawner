@@ -18,6 +18,38 @@ GigaSpawner::GigaSpawner() {
     GigaSpawner::peds = new std::list<CPed*>();
     GigaSpawner::vehicles = new std::list<CVehicle*>();
 
+    GigaSpawner::specialPedsC = new std::list<int>();
+    GigaSpawner::specialPedsV = new std::list<int>();
+    GigaSpawner::specialPedsB = new std::list<int>();
+    GigaSpawner::specialPedsN = new std::list<int>();
+	GigaSpawner::specialPedsM = new std::list<int>();
+
+    //LPCTSTR cfg_IniName = _T(".\\scripts\\GigaSpawner.ini");
+    //CIniReader config(cfg_IniName);
+
+    TCHAR sAbsolutePathBuffer[2048] = _T("");
+    if (GetFullPathName(TEXT(".\\GigaSpawner.ini"), sizeof(sAbsolutePathBuffer) / sizeof(TCHAR), sAbsolutePathBuffer, NULL))
+    {
+        CIniReader config(sAbsolutePathBuffer);
+        GigaSpawner::entityCount = config.ReadInteger("Settings", "InitialEntityCount", 3);
+        GigaSpawner::entityOffset = config.ReadFloat("Settings", "InitialEntityOFfset", 1.5f);
+        GigaSpawner::IAEnabled = config.ReadBoolean("Settings", "IAEnabled", false);
+
+        char* specialPedsCstr = config.ReadString("SpecialPeds", "C", "");
+        GigaSpawner::fillPedList(specialPedsCstr, GigaSpawner::specialPedsC);
+
+        char* specialPedsVstr = config.ReadString("SpecialPeds", "V", "");
+        GigaSpawner::fillPedList(specialPedsVstr, GigaSpawner::specialPedsV);
+
+        char* specialPedsBstr = config.ReadString("SpecialPeds", "B", "");
+        GigaSpawner::fillPedList(specialPedsBstr, GigaSpawner::specialPedsB);
+
+        char* specialPedsNstr = config.ReadString("SpecialPeds", "N", "");
+        GigaSpawner::fillPedList(specialPedsNstr, GigaSpawner::specialPedsN);
+
+        char* specialPedsMstr = config.ReadString("SpecialPeds", "M", "");
+        GigaSpawner::fillPedList(specialPedsMstr, GigaSpawner::specialPedsM);
+    }
     Events::gameProcessEvent += [] {
         CPlayerPed* player = FindPlayerPed();
 
@@ -31,6 +63,21 @@ GigaSpawner::GigaSpawner() {
                 }
                 else if (KeyPressed(0x58)) { //X
                     GigaSpawner::spawnMatrix(0);
+                }
+                else if (KeyPressed(0x43)) { //C
+                    GigaSpawner::spawnLine(1);
+                }
+                else if (KeyPressed(0x56)) { //V
+                    GigaSpawner::spawnLine(2);
+                }
+                else if (KeyPressed(0x42)) { //B
+                    GigaSpawner::spawnLine(3);
+                }
+                else if (KeyPressed(0x4E)) { //N
+                    GigaSpawner::spawnLine(4);
+                }
+                else if (KeyPressed(0x4D)) { //M
+                    GigaSpawner::spawnLine(5);
                 }
                 else if (KeyPressed(VK_SPACE)) {
                     std::list<CPed*>::iterator it;
@@ -52,6 +99,21 @@ GigaSpawner::GigaSpawner() {
                 }
                 else if (KeyPressed(0x58)) { //X
                     GigaSpawner::decrementEntities();
+                }
+                else if (KeyPressed(0x43)) { //C
+                    GigaSpawner::spawnMatrix(1);
+                }
+                else if (KeyPressed(0x56)) { //V
+                    GigaSpawner::spawnMatrix(2);
+                }
+                else if (KeyPressed(0x42)) { //B
+                    GigaSpawner::spawnMatrix(3);
+                }
+                else if (KeyPressed(0x4E)) { //N
+                    GigaSpawner::spawnMatrix(4);
+                }
+                else if (KeyPressed(0x4D)) { //M
+                    GigaSpawner::spawnMatrix(5);
                 }
                 else if (KeyPressed(VK_SPACE)) {
                     std::list<CPed*>::iterator it;
@@ -93,14 +155,6 @@ GigaSpawner::GigaSpawner() {
                         }
                     }
                 }
-
-                //Desabilitado por estar bugado
-                /*else if (KeyPressed(0x43)) { //C
-                    GigaSpawner::countVehicles();
-                }
-                else if (KeyPressed(0x56)) { //V
-                    GigaSpawner::deleteVehicles();
-                }*/
             }
             else if (KeyPressed(0x34)) { //4
                 if (KeyPressed(0x5A)) { //Z
@@ -119,35 +173,7 @@ GigaSpawner::GigaSpawner() {
                 }
             }
             else if (KeyPressed(0x36)) { //6
-
-            //Desabilitado por estar bugado
-                /*CVehicle* vehicle;
-
-                if (KeyPressed(0x5A)) { //Z
-                    GigaSpawner::spawnLine(1);
-                }
-                else if (KeyPressed(0x58)) { //X
-                    GigaSpawner::spawnLine(2);
-                }
-                else if (KeyPressed(0x43)) { //C
-                    GigaSpawner::spawnLine(3);
-                }
-                else if (KeyPressed(0x56)) { //V
-                    GigaSpawner::spawnLine(4);
-                }
-                else if (KeyPressed(0x47)) { //G
-                    GigaSpawner::spawnMatrix(1);
-                }
-                else if (KeyPressed(0x52)) { //B
-                    GigaSpawner::spawnMatrix(2);
-                }
-                else if (KeyPressed(0x4E)) { //N
-                    GigaSpawner::spawnMatrix(3);
-                }
-                else if (KeyPressed(0x4D)) { //M
-                    GigaSpawner::spawnMatrix(4);
-                }
-                else*/ if (KeyPressed(0x4A)) {
+                if (KeyPressed(0x4A)) {
                     CCheat::JetpackCheat();
                 }
         }
@@ -156,6 +182,16 @@ GigaSpawner::GigaSpawner() {
 #endif
         }
     };
+}
+
+void GigaSpawner::fillPedList(char* strIds, std::list<int>* list) {
+    std::stringstream ss(strIds);
+
+    for (int i; ss >> i;) {
+        list->push_back(i);
+        if (ss.peek() == ',')
+            ss.ignore();
+    }
 }
 
 CVehicle* GigaSpawner::spawnVehicle(unsigned int modelIndex, CVector position, float orientation) {
@@ -229,6 +265,11 @@ void GigaSpawner::spawnVehicle(unsigned int modelIndex, CVector pos) {
 
 void GigaSpawner::spawnNPC(CVector pos) {
     int modelID = pedModelIds[rand() % 250];
+    GigaSpawner::spawnSpecificNPC(modelID, pos);
+}
+
+void GigaSpawner::spawnSpecificNPC(int modelID, CVector pos)
+{
     CStreaming::RequestModel(modelID, 0);
     CStreaming::LoadAllRequestedModels(false);
     CPed* ped = new CCivilianPed(CPopulation::IsFemale(modelID) ? PED_TYPE_CIVFEMALE : PED_TYPE_CIVMALE, modelID);
@@ -241,8 +282,9 @@ void GigaSpawner::spawnNPC(CVector pos) {
         ped->UpdatePosition();
         ped->GiveDelayedWeapon(eWeaponType::WEAPON_PISTOL_SILENCED, 500);
         ped->SetCurrentWeapon(ped->GetWeaponSlot(eWeaponType::WEAPON_PISTOL_SILENCED));
-        
-        if(GigaSpawner::IAEnabled)
+        ped->m_nMoneyCount = 1000;
+
+        if (GigaSpawner::IAEnabled)
             ped->m_pIntelligence->m_TaskMgr.SetTask(new CTaskComplexWanderStandard(4, rand() % 8, true), 4, false);
     }
 
@@ -252,21 +294,71 @@ void GigaSpawner::spawnNPC(CVector pos) {
 void GigaSpawner::spawnLine(unsigned int id) {
     for (int i = 0; i < GigaSpawner::entityCount; i++) {
         CVector pos = CVector(playerOffset, playerOffset + GigaSpawner::entityOffset * (i + 1), 1.0f);
+        std::list<int>::const_iterator it;
+
         switch (id) {
         case 0:
             GigaSpawner::spawnNPC(pos);
             break;
         case 1:
-            //GigaSpawner::spawnVehicle(vehModelIds[rand() % 212], pos);
+            if (GigaSpawner::specialPedsC->size() > 0) {
+                it = specialPedsC->begin();
+                std::advance(it, rand() % GigaSpawner::specialPedsC->size());
+
+                GigaSpawner::spawnSpecificNPC(*it, pos);
+            }
+            else {
+                CHud::SetHelpMessage("GigaSpawner - No SpecialPedsC on INI file!!", true, false, false);
+                return;
+            }
             break;
         case 2:
-            //GigaSpawner::spawnVehicle(MODEL_ANDROM, pos);
+            if (GigaSpawner::specialPedsV->size() > 0) {
+                it = specialPedsV->begin();
+                std::advance(it, rand() % GigaSpawner::specialPedsV->size());
+
+                GigaSpawner::spawnSpecificNPC(*it, pos);
+            }
+            else {
+                CHud::SetHelpMessage("GigaSpawner - No SpecialPedsV on INI file!!", true, false, false);
+                return;
+            }
             break;
         case 3:
-            //GigaSpawner::spawnVehicle(MODEL_RHINO, pos);
+            if (GigaSpawner::specialPedsB->size() > 0) {
+                it = specialPedsB->begin();
+                std::advance(it, rand() % GigaSpawner::specialPedsB->size());
+
+                GigaSpawner::spawnSpecificNPC(*it, pos);
+            }
+            else {
+                CHud::SetHelpMessage("GigaSpawner - No SpecialPedsB on INI file!!", true, false, false);
+                return;
+            }
             break;
         case 4:
-            //GigaSpawner::spawnVehicle(MODEL_PHOENIX, pos);
+            if (GigaSpawner::specialPedsN->size() > 0) {
+                it = specialPedsN->begin();
+                std::advance(it, rand() % GigaSpawner::specialPedsN->size());
+
+                GigaSpawner::spawnSpecificNPC(*it, pos);
+            }
+            else {
+                CHud::SetHelpMessage("GigaSpawner - No SpecialPedsN on INI file!!", true, false, false);
+                return;
+            }
+            break;
+        case 5:
+            if (GigaSpawner::specialPedsM->size() > 0) {
+                it = specialPedsM->begin();
+                std::advance(it, rand() % GigaSpawner::specialPedsM->size());
+
+                GigaSpawner::spawnSpecificNPC(*it, pos);
+            }
+            else {
+                CHud::SetHelpMessage("GigaSpawner - No SpecialPedsM on INI file!!", true, false, false);
+                return;
+            }
             break;
         }
     }
@@ -279,21 +371,71 @@ void GigaSpawner::spawnMatrix(unsigned int id) {
     for (int x = 0; x < GigaSpawner::entityCount; x++) {
         for (int y = 0; y < GigaSpawner::entityCount; y++) {
             CVector pos = CVector(playerOffset + GigaSpawner::entityOffset * (y + 1), playerOffset + GigaSpawner::entityOffset * (x + 1), 1.0f);
+            std::list<int>::const_iterator it;
+
             switch (id) {
             case 0:
                 GigaSpawner::spawnNPC(pos);
                 break;
             case 1:
-                //GigaSpawner::spawnVehicle(vehModelIds[rand() % 212], pos);
+                if (GigaSpawner::specialPedsC->size() > 0) {
+                    it = specialPedsC->begin();
+                    std::advance(it, rand() % GigaSpawner::specialPedsC->size());
+
+                    GigaSpawner::spawnSpecificNPC(*it, pos);
+                }
+                else {
+                    CHud::SetHelpMessage("GigaSpawner - No SpecialPedsC on INI file!!", true, false, false);
+                    return;
+                }
                 break;
             case 2:
-                //GigaSpawner::spawnVehicle(MODEL_ANDROM, pos);
+                if (GigaSpawner::specialPedsV->size() > 0) {
+                    it = specialPedsV->begin();
+                    std::advance(it, rand() % GigaSpawner::specialPedsV->size());
+
+                    GigaSpawner::spawnSpecificNPC(*it, pos);
+                }
+                else {
+                    CHud::SetHelpMessage("GigaSpawner - No SpecialPedsV on INI file!!", true, false, false);
+                    return;
+                }
                 break;
             case 3:
-                //GigaSpawner::spawnVehicle(MODEL_RHINO, pos);
+                if (GigaSpawner::specialPedsB->size() > 0) {
+                    it = specialPedsB->begin();
+                    std::advance(it, rand() % GigaSpawner::specialPedsB->size());
+
+                    GigaSpawner::spawnSpecificNPC(*it, pos);
+                }
+                else {
+                    CHud::SetHelpMessage("GigaSpawner - No SpecialPedsB on INI file!!", true, false, false);
+                    return;
+                }
                 break;
             case 4:
-                //GigaSpawner::spawnVehicle(MODEL_PHOENIX, pos);
+                if (GigaSpawner::specialPedsN->size() > 0) {
+                    it = specialPedsN->begin();
+                    std::advance(it, rand() % GigaSpawner::specialPedsN->size());
+
+                    GigaSpawner::spawnSpecificNPC(*it, pos);
+                }
+                else {
+                    CHud::SetHelpMessage("GigaSpawner - No SpecialPedsN on INI file!!", true, false, false);
+                    return;
+                }
+                break;
+            case 5:
+                if (GigaSpawner::specialPedsM->size() > 0) {
+                    it = specialPedsM->begin();
+                    std::advance(it, rand() % GigaSpawner::specialPedsM->size());
+
+                    GigaSpawner::spawnSpecificNPC(*it, pos);
+                }
+                else {
+                    CHud::SetHelpMessage("GigaSpawner - No SpecialPedsM on INI file!!", true, false, false);
+                    return;
+                }
                 break;
             }
         }

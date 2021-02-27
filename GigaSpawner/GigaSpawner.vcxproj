@@ -101,10 +101,12 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="GigaSpawner.cpp" />
+    <ClCompile Include="IniReader.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GigaSpawner.h" />
     <ClInclude Include="includes.h" />
+    <ClInclude Include="IniReader.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="README.md" />

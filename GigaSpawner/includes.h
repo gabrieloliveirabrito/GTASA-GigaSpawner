@@ -1,6 +1,9 @@
 #pragma once
+#include <tchar.h>
+
 #include "plugin.h"
 #include "common.h"
+#include "IniReader.h"
 #include "CTimer.h"
 #include "CPopulation.h"
 #include "CCivilianPed.h"
